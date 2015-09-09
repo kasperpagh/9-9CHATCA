@@ -91,7 +91,11 @@ public class Server extends Thread
     
     public void stopUser(String userName, ClientHandler ch)
     {        
+        System.out.println("I SERVER STOP");
+        System.out.println(users.toString());
         users.remove(userName, ch);
+        System.out.println(users.toString());
+        
     }
 
     public synchronized void userList()

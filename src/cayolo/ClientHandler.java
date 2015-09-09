@@ -21,7 +21,7 @@ public class ClientHandler extends Thread
 
     private Socket s;
     private Server ser;
-    private String userName;
+    private String nameInput;
     Scanner checkUserName;
     BufferedReader in;
     PrintWriter out;
@@ -29,6 +29,7 @@ public class ClientHandler extends Thread
     private String inMsg;
     private Scanner scan;
     private Scanner msgPPL;
+    
 
     public ClientHandler(Socket s, Server ser)
     {
@@ -48,17 +49,18 @@ public class ClientHandler extends Thread
             while (pendingUserName)
             {
 //                out.println("Please enter a username like this: USER#'your_name'");
-                userName = in.readLine();
-                checkUserName = new Scanner(userName);
+                nameInput = in.readLine();
+                checkUserName = new Scanner(nameInput);
                 checkUserName.useDelimiter("#");
                 while (checkUserName.hasNext())
                 {
                     String a = checkUserName.next();
-                    String b = checkUserName.next();
+                    String userName = checkUserName.next();
 
                     if (a.equals("USER"))
                     {
-                        ser.addUser(b, this);
+                        ser.addUser(userName, this);
+                        nameInput = userName;
                         pendingUserName = false;
                     }
                 }
@@ -71,7 +73,7 @@ public class ClientHandler extends Thread
         }
 
         ser.userList();
-
+        sendMessage();
     }
 
     public void sendUserList(String list)
@@ -79,12 +81,9 @@ public class ClientHandler extends Thread
         out.println(list);
     }
 
-    public void stopUser(String userName)
-    {
-        ser.stopUser(userName, this);
-    }
 
-    public synchronized void sendMessage(String userName)
+
+    public synchronized void sendMessage()
     {
         try
         {
@@ -100,16 +99,44 @@ public class ClientHandler extends Thread
             while (scan.hasNext())
             {
                 first = scan.next();
-                middle = scan.next();
-                last = scan.next();
+//                middle = scan.next();
+//                last = scan.next();
 
-                
+                switch (first)
+                {
+                    case "STOP":
+                        stopClient();
+                        break;
+                    case "MSG":
+                        
+                        break;
+                }
             }
         } catch (IOException ex)
         {
             System.err.println("Knas i sendMsg");
         }
 
+    }
+
+    public void message(String middle, String last)
+    {
+        
+    }
+    public void stopClient() 
+    {
+        try{
+        ser.stopUser(nameInput, this);
+        ser.userList();
+        System.out.println("jeg er ikke lukket endnu");
+        s.close();
+       
+        System.out.println("Jeg er lukket" +  s.isClosed());
+        }
+        catch(IOException ex)
+        {
+            System.err.println("JEG HAR FANGET EX I STOP CLIENT");
+        }
     }
 
 }
