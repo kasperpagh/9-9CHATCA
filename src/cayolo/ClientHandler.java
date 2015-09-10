@@ -32,6 +32,7 @@ public class ClientHandler extends Thread
     private Scanner msgPPL;
     private Scanner middleScan;
     private ArrayList recipients;
+    private boolean running;
 
     public ClientHandler(Socket s, Server ser)
     {
@@ -75,9 +76,14 @@ public class ClientHandler extends Thread
         }
 
         ser.userList();
-        while (true)
+        System.out.println("Her er lige før lolloopet");
+        if (!s.isClosed())
         {
-            chat();
+            while (true)
+            {
+                chat();
+
+            }
         }
     }
 
@@ -111,6 +117,9 @@ public class ClientHandler extends Thread
                 switch (first)
                 {
                     case "STOP":
+                        scan.close();
+                        in.close();
+                        out.close();
                         stopClient();
                         break;
                     case "MSG":
@@ -119,9 +128,9 @@ public class ClientHandler extends Thread
                         break;
                 }
             }
-        } catch (IOException ex)
+        } catch (IOException | IllegalStateException ex)
         {
-            System.err.println("Knas i sendMsg");
+            System.err.println("Der er fanget illegalStateEx i chat funktionen, and it's cool");
         }
 
     }
@@ -153,6 +162,7 @@ public class ClientHandler extends Thread
 
     public void stopClient()
     {
+        
         try
         {
             ser.stopUser(nameInput, this);
