@@ -88,31 +88,54 @@ public class Server extends Thread
         users.put(username, ch);
         clients.add(username);
     }
-    
+
     public void stopUser(String userName, ClientHandler ch)
-    {        
+    {
         System.out.println("I SERVER STOP");
         System.out.println(users.toString());
         users.remove(userName, ch);
         System.out.println(users.toString());
-        
+
     }
 
     public synchronized void userList()
     {
         String onlineMsg = "USERLIST#";
-        for(String user : users.keySet())
+
+        for (String user : users.keySet())
         {
             onlineMsg += user + ",";
-            
+
         }
-        for(ClientHandler ch : users.values())
+        for (ClientHandler ch : users.values())
         {
             ch.sendUserList(onlineMsg);
         }
 //        out.println("USERLIST#" + clients.toString());
     }
 
-
-
+    public void sendMessage(String message, ArrayList<String> recipients)
+    {
+        System.out.println("bubberllama: " + recipients.toString());
+        
+        if (recipients.size() == 1 && !recipients.get(0).equals("*"))
+        {
+            ClientHandler ch = users.get(recipients.get(0));
+            ch.message(message);
+        } else if (recipients.get(0).equals("*"))
+        {
+            System.out.println("her er field 0 i array: " + recipients.get(0));
+            for (ClientHandler ch : users.values())
+            {
+                ch.message(message);
+            }
+        } else
+        {
+            for (String recipient : recipients)
+            {
+                ClientHandler ch = users.get(recipient);
+                ch.message(message);
+            }
+        }
+    }
 }

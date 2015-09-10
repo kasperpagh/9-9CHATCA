@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -29,7 +30,8 @@ public class ClientHandler extends Thread
     private String inMsg;
     private Scanner scan;
     private Scanner msgPPL;
-    
+    private Scanner middleScan;
+    private ArrayList recipients;
 
     public ClientHandler(Socket s, Server ser)
     {
@@ -73,7 +75,10 @@ public class ClientHandler extends Thread
         }
 
         ser.userList();
-        sendMessage();
+        while (true)
+        {
+            chat();
+        }
     }
 
     public void sendUserList(String list)
@@ -81,9 +86,7 @@ public class ClientHandler extends Thread
         out.println(list);
     }
 
-
-
-    public synchronized void sendMessage()
+    public synchronized void chat()
     {
         try
         {
@@ -95,12 +98,15 @@ public class ClientHandler extends Thread
             inMsg = in.readLine();
             scan = new Scanner(inMsg);
             scan.useDelimiter("#");
-            String msgName = "";
+
             while (scan.hasNext())
             {
                 first = scan.next();
-//                middle = scan.next();
-//                last = scan.next();
+                if (!first.equals("STOP"))
+                {
+                    middle = scan.next();
+                    last = scan.next();
+                }
 
                 switch (first)
                 {
@@ -108,7 +114,8 @@ public class ClientHandler extends Thread
                         stopClient();
                         break;
                     case "MSG":
-                        
+                        System.out.println("JEG ER I MSG I SWITCH");
+                        ser.sendMessage(last, msgRecipients(middle));
                         break;
                 }
             }
@@ -119,21 +126,42 @@ public class ClientHandler extends Thread
 
     }
 
-    public void message(String middle, String last)
+    public ArrayList msgRecipients(String middle)
     {
-        
-    }
-    public void stopClient() 
-    {
-        try{
-        ser.stopUser(nameInput, this);
-        ser.userList();
-        System.out.println("jeg er ikke lukket endnu");
-        s.close();
-       
-        System.out.println("Jeg er lukket" +  s.isClosed());
+        System.out.println("LIGE INDE I MSGRECI");
+        recipients = new ArrayList();
+        middleScan = new Scanner(middle);
+        middleScan.useDelimiter(",");
+        String names = "";
+
+        while (middleScan.hasNext())
+        {
+
+            names = middleScan.next();
+
+            recipients.add(names);
         }
-        catch(IOException ex)
+        System.out.println("FRA msgReci " + recipients.toString());
+        return recipients;
+
+    }
+
+    public void message(String message)
+    {
+        out.println(message);
+    }
+
+    public void stopClient()
+    {
+        try
+        {
+            ser.stopUser(nameInput, this);
+            ser.userList();
+            System.out.println("jeg er ikke lukket endnu");
+            s.close();
+
+            System.out.println("Jeg er lukket" + s.isClosed());
+        } catch (IOException ex)
         {
             System.err.println("JEG HAR FANGET EX I STOP CLIENT");
         }
