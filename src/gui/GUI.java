@@ -203,7 +203,7 @@ public class GUI extends javax.swing.JFrame implements Observer
         } else if (cmdField.getText().equals("STOP"))
         {
 
-            this.setVisible(false);
+            this.dispose();
             client.killMePls();
         }
 

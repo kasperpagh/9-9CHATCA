@@ -58,7 +58,7 @@ public class Client extends Observable implements Runnable
             {
                 try
                 {
-                    while (true)
+                    while (running)
                     {
 
                         message = scan.nextLine();
