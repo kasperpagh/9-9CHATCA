@@ -7,6 +7,8 @@ package gui;
 
 import client.Client;
 import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,7 +16,7 @@ import java.util.logging.Logger;
  *
  * @author pagh
  */
-public class GUI extends javax.swing.JFrame
+public class GUI extends javax.swing.JFrame implements Observer
 {
 
     private Client client;
@@ -26,7 +28,7 @@ public class GUI extends javax.swing.JFrame
     {
         initComponents();
         client = new Client();
-        
+
     }
 
     /**
@@ -47,8 +49,6 @@ public class GUI extends javax.swing.JFrame
         targetField = new javax.swing.JTextField();
         sendBtn = new javax.swing.JButton();
         warningLabel = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        userList = new javax.swing.JList();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -62,14 +62,35 @@ public class GUI extends javax.swing.JFrame
         });
 
         msgField.setText("MESSAGE HERE");
+        msgField.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mouseClicked(java.awt.event.MouseEvent evt)
+            {
+                msgFieldMouseClicked(evt);
+            }
+        });
 
         mainTxtField.setColumns(20);
         mainTxtField.setRows(5);
         jScrollPane1.setViewportView(mainTxtField);
 
         cmdField.setText("COMMAND");
+        cmdField.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mouseClicked(java.awt.event.MouseEvent evt)
+            {
+                cmdFieldMouseClicked(evt);
+            }
+        });
 
         targetField.setText("RECIPIENTS (write * to msg everyone)");
+        targetField.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mouseClicked(java.awt.event.MouseEvent evt)
+            {
+                targetFieldMouseClicked(evt);
+            }
+        });
         targetField.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -89,56 +110,49 @@ public class GUI extends javax.swing.JFrame
 
         warningLabel.setText("Hejsa og velkommen! Husk at hashtags er ligemeget");
 
-        userList.setModel(new javax.swing.AbstractListModel()
-        {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane2.setViewportView(userList);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(251, 251, 251)
+                .addComponent(connectBtn)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jScrollPane1)
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(cmdField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(targetField)))
-                        .addGap(22, 22, 22))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(167, 167, 167)
-                                .addComponent(connectBtn))
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(msgField, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 4, Short.MAX_VALUE))
+                        .addComponent(jScrollPane1)
+                        .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(warningLabel)
+                        .addGap(89, 89, 89))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(47, 47, 47)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(sendBtn, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(warningLabel, javax.swing.GroupLayout.Alignment.TRAILING))))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(sendBtn)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(cmdField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(28, 28, 28)
+                                        .addComponent(targetField))
+                                    .addComponent(msgField, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap(129, Short.MAX_VALUE))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(6, 6, 6)
                 .addComponent(warningLabel)
-                .addGap(8, 8, 8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(connectBtn)
-                .addGap(18, 18, 18)
+                .addGap(8, 8, 8)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cmdField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(targetField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -146,10 +160,6 @@ public class GUI extends javax.swing.JFrame
                 .addComponent(msgField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sendBtn))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2)
-                .addContainerGap())
         );
 
         pack();
@@ -160,6 +170,7 @@ public class GUI extends javax.swing.JFrame
         try
         {
             client.connect("localhost", 4321);
+            
         } catch (IOException ex)
         {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
@@ -173,32 +184,45 @@ public class GUI extends javax.swing.JFrame
 
     private void sendBtnActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_sendBtnActionPerformed
     {//GEN-HEADEREND:event_sendBtnActionPerformed
-        
+
         if (cmdField.getText().isEmpty() && targetField.getText().isEmpty() && msgField.getText().isEmpty())
         {
             warningLabel.setText("HUSK AT SKRIVE FØREND DU SENDER, BUBBER!");
-        }
-        else if( (cmdField.getText().equals("MSG")))
+        } else if ((cmdField.getText().equals("MSG")))
         {
-            mainTxtField.setText(client.getUserName() +" --> " + msgField.getText());
+            mainTxtField.append(client.getUserName() + " writes:  " + msgField.getText() + "\n");
             client.send(cmdField.getText().toUpperCase() + "#" + targetField.getText() + "#" + msgField.getText());
             msgField.setText("");
-        }
-        else if(cmdField.getText().equals("USER"))
+        } else if (cmdField.getText().equals("USER"))
         {
             client.setUserName(targetField.getText());
+            client.registerObserver(this);
             client.send(cmdField.getText().toUpperCase() + "#" + targetField.getText());
             cmdField.setText("");
             targetField.setText("");
-        }
-        else if(cmdField.getText().equals("STOP"))
+        } else if (cmdField.getText().equals("STOP"))
         {
-            
+
             this.setVisible(false);
             client.killMePls();
         }
-    
+
     }//GEN-LAST:event_sendBtnActionPerformed
+
+    private void cmdFieldMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_cmdFieldMouseClicked
+    {//GEN-HEADEREND:event_cmdFieldMouseClicked
+        cmdField.setText("");
+    }//GEN-LAST:event_cmdFieldMouseClicked
+
+    private void targetFieldMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_targetFieldMouseClicked
+    {//GEN-HEADEREND:event_targetFieldMouseClicked
+        targetField.setText("");
+    }//GEN-LAST:event_targetFieldMouseClicked
+
+    private void msgFieldMouseClicked(java.awt.event.MouseEvent evt)//GEN-FIRST:event_msgFieldMouseClicked
+    {//GEN-HEADEREND:event_msgFieldMouseClicked
+        msgField.setText("");
+    }//GEN-LAST:event_msgFieldMouseClicked
 
     /**
      * @param args the command line arguments
@@ -241,7 +265,7 @@ public class GUI extends javax.swing.JFrame
             public void run()
             {
                 new GUI().setVisible(true);
-                
+
             }
         });
     }
@@ -250,12 +274,43 @@ public class GUI extends javax.swing.JFrame
     private javax.swing.JTextField cmdField;
     private javax.swing.JButton connectBtn;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea mainTxtField;
     private javax.swing.JTextField msgField;
     private javax.swing.JButton sendBtn;
     private javax.swing.JTextField targetField;
-    private javax.swing.JList userList;
     private javax.swing.JLabel warningLabel;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void update(Observable o, Object o1)
+    {
+        String msg = (String) o1;
+        mainTxtField.append(msg + "\n");
+//        splitMessage(msg);
+    }
+
+//    public String splitMessage(String message)
+//    {
+//        String s = "";
+//
+//        if (message.startsWith("MSG#"))
+//        {
+//            String[] a = message.split("#", 3);
+//            s = a[1] + ": " + a[2];
+//            System.out.println(s);
+//            mainTxtField.append(s + System.lineSeparator());
+//        } else if (message.startsWith("USERLIST#"))
+//        {
+//            String[] b = message.split("#", 2); // Split into USERLIST# //AND// user1,user2,user3...
+//            String[] b2 = b[1].split(","); // Split users by comma.
+//
+//            warningLabel.setText("abekat"); // Clear textArea for users so we can append.
+////            for (int i = 0; i < b2.length; i++)
+////            {
+////                jTextAreaUsers.append(b2[i] + System.lineSeparator()); //Append all users in a seperate line.
+////            }
+//        }
+//        
+//        return s;
+//    }
 }

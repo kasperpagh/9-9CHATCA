@@ -112,6 +112,7 @@ public class Server extends Thread
 
         for (String user : users.keySet())
         {
+            
             onlineMsg += user + ",";
 
         }
@@ -124,7 +125,7 @@ public class Server extends Thread
 
     public void sendMessage(String message, ArrayList<String> recipients)
     {
-        System.out.println("bubberllama: " + recipients.toString());
+        System.out.println("modtagere: " + recipients.toString());
 
         if (recipients.size() == 1 && !recipients.get(0).equals("*"))
         {
