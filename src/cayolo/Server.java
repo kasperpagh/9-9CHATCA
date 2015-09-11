@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +31,7 @@ public class Server extends Thread
     private boolean running = true;
     private ArrayList clients;
     private HashMap<String, ClientHandler> users;
+//    private static final Properties properties = utils.Utils.initProperties("server.properties");
     Scanner scan;
     String inMsg;
     BufferedReader in;
@@ -50,6 +52,10 @@ public class Server extends Thread
 
     public static void main(String[] args)
     {
+//        int port = Integer.parseInt(properties.getProperty("port"));
+//        String ip = properties.getProperty("server-Ip");
+//        String logFile = properties.getProperty("logFile");
+//        Logger.getLogger(Server.class.getName()).log(Level.INFO, "Sever started");
         new Server().connect();
 
     }
@@ -67,6 +73,7 @@ public class Server extends Thread
             {
                 //Here we make a uniqe user in the form of a clientHandler and adds it to an arraylist
                 s = ss.accept();
+//                Logger.getLogger(Server.class.getName()).log(Level.INFO, "forbundet til klient");
                 ClientHandler ch = new ClientHandler(s, this);
 
 //                out.println("Connected!");
@@ -94,6 +101,7 @@ public class Server extends Thread
         System.out.println("I SERVER STOP");
         System.out.println(users.toString());
         users.remove(userName, ch);
+        
         System.out.println(users.toString());
 
     }
@@ -117,7 +125,7 @@ public class Server extends Thread
     public void sendMessage(String message, ArrayList<String> recipients)
     {
         System.out.println("bubberllama: " + recipients.toString());
-        
+
         if (recipients.size() == 1 && !recipients.get(0).equals("*"))
         {
             ClientHandler ch = users.get(recipients.get(0));

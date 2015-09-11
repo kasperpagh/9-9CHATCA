@@ -16,7 +16,6 @@ import java.util.Observer;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import shared.ProtocolStrings;
 
 /**
  *
@@ -30,43 +29,57 @@ public class Client extends Thread
     private InetAddress serverAddress;
     private Scanner input;
     private PrintWriter output;
-    private List<Observer> observersList = new ArrayList();
-    private Client ec = this;
-    String name;
+    private boolean running = true;
+    private String name;
 
-    public void connect(String address, int port) throws UnknownHostException, IOException
+    public void connect(String address, int port) throws IOException
     {
         this.port = port;
+
         serverAddress = InetAddress.getByName(address);
-        socket = new Socket(serverAddress, port);
+        //HUSK AT ÆNDRE NEDENSTÅENDE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        socket = new Socket(address, port);
         input = new Scanner(socket.getInputStream());
         output = new PrintWriter(socket.getOutputStream(), true);  //Set to true, to get auto flush behaviour
-        run();
-    }
+        if (running)
+        {
+            start();
+        }
 
-    public void registerObserver(Observer o)
-    {
-        observersList.add(o);
     }
-
-    public void setUserName(String usrName)
+    
+    public void recieve()
     {
-        name = usrName;
+        
     }
-
-    public String getUserName()
-    {
-        return name;
-    }
+    
+    
 
     public void send(String msg)
     {
         output.println(msg);
     }
 
-    public void stopClient() throws IOException
+    public void killMePls()
     {
-        output.println(ProtocolStrings.STOP);
+        try
+        {
+            running = false;
+            socket.close();
+//            this.interrupt();
+        } catch (IOException ex)
+        {
+            System.err.println("The reason you see this, is becourse your socket likes to throw IOexceptions better than it likes to close();");
+        }
     }
-
+    
+    public String getUserName()
+    {
+        return name;
+    }
+    
+    public void setUserName(String usrName)
+    {
+        name = usrName;
+    }
 }

@@ -117,9 +117,6 @@ public class ClientHandler extends Thread
                 switch (first)
                 {
                     case "STOP":
-                        scan.close();
-                        in.close();
-                        out.close();
                         stopClient();
                         break;
                     case "MSG":
@@ -128,9 +125,9 @@ public class ClientHandler extends Thread
                         break;
                 }
             }
-        } catch (IOException | IllegalStateException ex)
+        } catch (IOException ex)
         {
-            System.err.println("Der er fanget illegalStateEx i chat funktionen, and it's cool");
+            System.err.println("Knas i sendMsg");
         }
 
     }
@@ -162,7 +159,6 @@ public class ClientHandler extends Thread
 
     public void stopClient()
     {
-        
         try
         {
             ser.stopUser(nameInput, this);
